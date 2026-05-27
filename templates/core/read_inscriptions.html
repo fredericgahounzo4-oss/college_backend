@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Liste des inscriptions</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+  table { font-size: 0.85rem; }
+  th { white-space: nowrap; }
+</style>
+</head>
+<body class="p-3">
+<h2>Liste des inscriptions</h2>
+<div class="table-responsive mt-3">
+<table class="table table-bordered table-striped table-hover">
+  <thead class="table-dark">
+    <tr>
+      <th>Prénom</th><th>Nom</th><th>Email</th><th>Téléphone</th>
+      <th>Naissance</th><th>Adresse</th><th>Niveau</th><th>Catégorie</th>
+      <th>Programme</th><th>Session</th><th>Formation</th>
+      <th>Source</th><th>Situation</th><th>Objectifs</th><th>Date</th><th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for i in inscriptions %}
+    <tr>
+      <td>{{ i.prenom }}</td><td>{{ i.nom }}</td><td>{{ i.email }}</td>
+      <td>{{ i.telephone }}</td><td>{{ i.date_naissance }}</td>
+      <td>{{ i.adresse|truncatechars:30 }}</td><td>{{ i.niveau_etudes }}</td>
+      <td>{{ i.categorie }}</td><td>{{ i.programme }}</td><td>{{ i.session }}</td>
+      <td>{{ i.type_formation }}</td><td>{{ i.source }}</td>
+      <td>{{ i.situation }}</td><td>{{ i.objectifs|truncatechars:30 }}</td>
+      <td>{{ i.created_at|date:"d/m/Y" }}</td>
+      <td style="white-space:nowrap">
+        <a href="{% url 'update_inscription' i.pk %}" class="btn btn-sm btn-warning">Modifier</a>
+        <a href="{% url 'delete_inscription' i.pk %}" class="btn btn-sm btn-danger"
+           onclick="return confirm('Supprimer ?')">Supprimer</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="16" class="text-center">Aucune inscription.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+</body>
+</html>

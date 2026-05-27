@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visite Virtuelle - Le Tchep Consulting Services</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f0f0f;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .hero-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        .hero-video-fallback {
+            display: none;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(102, 126, 234, 0.6);
+            z-index: 1;
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 2;
+            padding: 20px;
+        }
+
+        .hero h1 {
+            font-size: 4em;
+            margin-bottom: 20px;
+            text-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: fadeInUp 1s;
+        }
+
+        .hero p {
+            font-size: 1.5em;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            animation: fadeInUp 1s 0.3s both;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin-top: 40px;
+            animation: fadeInUp 1s 0.6s both;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 3em;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 1em;
+            opacity: 0.9;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-20px); }
+            60% { transform: translateX(-50%) translateY(-10px); }
+        }
+
+        .section {
+            padding: 80px 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 2.5em;
+            text-align: center;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: #999;
+            margin-bottom: 50px;
+            font-size: 1.1em;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .gallery-item {
+            position: relative;
+            height: 300px;
+            border-radius: 20px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+
+        .gallery-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.7) 100%);
+            z-index: 1;
+        }
+
+        .gallery-item-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 25px;
+            z-index: 2;
+        }
+
+        .gallery-item h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .gallery-item p {
+            font-size: 0.95em;
+            opacity: 0.9;
+        }
+
+        .gallery-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            margin-bottom: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            max-width: 900px;
+            width: 100%;
+            background: #1a1a1a;
+            border-radius: 20px;
+            padding: 40px;
+            position: relative;
+            animation: modalSlideIn 0.3s;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 30px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            transition: all 0.3s;
+        }
+
+        .close-modal:hover {
+            background: rgba(255,255,255,0.2);
+            transform: rotate(90deg);
+        }
+
+        .modal-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .modal-item {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .modal-item:hover {
+            background: rgba(102, 126, 234, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .modal-item-icon {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .modal-item-text {
+            font-size: 0.9em;
+            color: #ccc;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(102, 126, 234, 0.5);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .feature-icon {
+            font-size: 50px;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+        }
+
+        .feature-card p {
+            opacity: 0.8;
+            line-height: 1.6;
+        }
+
+        .cta-section {
+            text-align: center;
+            padding: 80px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin-top: 50px;
+        }
+
+        .cta-section h2 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .cta-section p {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 40px;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: all 0.3s;
+            margin: 0 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5em;
+            }
+
+            .hero p {
+                font-size: 1.2em;
+            }
+
+            .hero-stats {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .stat-number {
+                font-size: 2em;
+            }
+
+            .section-title {
+                font-size: 2em;
+            }
+
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                padding: 30px 20px;
+            }
+
+            .btn {
+                display: block;
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <video class="hero-video" autoplay muted loop playsinline preload="auto">
+            <source src="assets/img/education1/videostudente.mp4" type="video/mp4">
+            <source src="https://assets.mixkit.co/videos/preview/mixkit-students-studying-in-a-library-50165-large.mp4" type="video/mp4">
+        </video>
+        <div class="hero-content">
+            <h1>🎓 Visite Virtuelle</h1>
+            <p>Découvrez Le Tchep Consulting Services</p>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number">50+</span>
+                    <span class="stat-label">Programmes</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">6+</span>
+                    <span class="stat-label">Domaines</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">100%</span>
+                    <span class="stat-label">Pratique</span>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <svg width="30" height="50" viewBox="0 0 30 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="1" y="1" width="28" height="48" rx="14" stroke="white" stroke-width="2"/>
+                <circle cx="15" cy="15" r="4" fill="white"/>
+            </svg>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Nos Espaces de Formation</h2>
+        <p class="section-subtitle">Des infrastructures modernes pour chaque domaine d'expertise</p>
+        
+        <div class="gallery-grid">
+            <div class="gallery-item" onclick="openModal('gestion')">
+                <div class="gallery-item-content">
+                    <div class="gallery-icon">💼</div>
+                    <h3>Gestion & Finance</h3>
+                    <p>Salles équipées pour les formations en comptabilité, finance, ressources humaines et gestion de projets</p>
+                </div>
+            </div>
+
+            <div class="gallery-item" onclick="openModal('informatique')">
+                <div class="gallery-item-content">
+                    <div class="gallery-icon">💻</div>
+                    <h3>Salle Informatique</h3>
+                    <p>Laboratoires high-tech pour bureautique, développement web, infographie et marketing digital</p>
+                </div>
+            </div>
+
+            <div class="gallery-item" onclick="openModal('sante')">
+                <div class="gallery-item-content">
+                    <div class="gallery-icon">🏥</div>
+                    <h3>Formation Santé</h3>
+                    <p>Espaces dédiés aux formations paramédicales et secrétariat médical</p>
+                </div>
+            </div>
+
+            <div class="gallery-item" onclick="openModal('logistique')">
+                <div class="gallery-item-content">
+                    <div class="gallery-icon">📦</div>
+                    <h3>Transit & Logistique</h3>
+                    <p>Salles de cours et simulations pour la logistique et le commerce international</p>
+                </div>
+            </div>
+
+            <div class="gallery-item" onclick="openModal('secretariat')">
+                <div class="gallery-item-content">
+                    <div class="gallery-icon">📝</div>
+                    <h3>Secrétariat & Langues</h3>
+                    <p>Espaces d'apprentissage pour secrétariat, langues et communication professionnelle</p>
+                </div>
+            </div>
+
+            <div class="gallery-item" onclick="openModal('hotellerie')">
+                <div class="gallery-item-content">
+                    <div class="gallery-icon">👨‍🍳</div>
+                    <h3>Hôtellerie & Restauration</h3>
+                    <p>Cuisines professionnelles et ateliers pour cuisine, pâtisserie et service</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Nos Équipements & Services</h2>
+        <p class="section-subtitle">Des outils professionnels pour une formation d'excellence</p>
+        
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">🖥️</div>
+                <h3>Équipements Modernes</h3>
+                <p>Ordinateurs récents, logiciels à jour, matériel professionnel dans tous les domaines</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📚</div>
+                <h3>Bibliothèque</h3>
+                <p>Centre de ressources avec livres, manuels et documentation professionnelle</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🌐</div>
+                <h3>WiFi Haut Débit</h3>
+                <p>Connexion internet rapide dans tout le centre pour vos recherches et travaux</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">❄️</div>
+                <h3>Salles Climatisées</h3>
+                <p>Espaces confortables avec climatisation pour un apprentissage optimal</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🎓</div>
+                <h3>Formateurs Qualifiés</h3>
+                <p>Professionnels expérimentés et certifiés dans leurs domaines respectifs</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🏆</div>
+                <h3>Certifications</h3>
+                <p>Diplômes et attestations reconnus à l'issue de vos formations</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🤝</div>
+                <h3>Stages Pratiques</h3>
+                <p>Mise en relation avec des entreprises partenaires pour stages et emplois</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">⏰</div>
+                <h3>Horaires Flexibles</h3>
+                <p>Cours en journée, en soirée et le weekend selon vos disponibilités</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">👥</div>
+                <h3>Petits Groupes</h3>
+                <p>Classes à effectif réduit pour un suivi personnalisé de chaque étudiant</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">💳</div>
+                <h3>Facilités de Paiement</h3>
+                <p>Plans de paiement échelonné adaptés à votre budget</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3>Suivi Personnalisé</h3>
+                <p>Accompagnement individualisé pour garantir votre réussite</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">♿</div>
+                <h3>Accessibilité</h3>
+                <p>Locaux accessibles aux personnes à mobilité réduite</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="cta-section">
+        <h2>Prêt à Commencer Votre Formation ?</h2>
+        <p>Rejoignez les milliers d'étudiants qui ont transformé leur carrière avec nous</p>
+        <a href="Registre.html" class="btn">S'inscrire Maintenant</a>
+        <a href="tel:+22893358484" class="btn">Nous Contacter</a>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">×</span>
+            <h2 id="modal-title"></h2>
+            <p id="modal-description"></p>
+            <div class="modal-gallery" id="modal-gallery"></div>
+        </div>
+    </div>
+
+    <script>
+        // Gestion de la vidéo avec fallback
+        const video = document.querySelector('.hero-video');
+        
+        video.addEventListener('error', function() {
+            console.log('Erreur de chargement de la vidéo locale, utilisation du fallback');
+        });
+
+        video.addEventListener('loadeddata', function() {
+            console.log('Vidéo chargée avec succès');
+        });
+
+        const spaces = {
+            gestion: {
+                title: '💼 Gestion, Comptabilité & Finance',
+                description: 'Nos salles de formation en gestion sont équipées de logiciels professionnels de comptabilité, gestion et finance. Apprenez dans des conditions réelles avec des outils utilisés en entreprise.',
+                items: [
+                    { icon: '📊', text: 'Logiciels de Comptabilité' },
+                    { icon: '💰', text: 'Outils de Gestion Financière' },
+                    { icon: '👥', text: 'RH & Paie' },
+                    { icon: '📈', text: 'Tableaux de Bord' },
+                    { icon: '🏦', text: 'Gestion Bancaire' },
+                    { icon: '📋', text: 'Gestion de Projets' }
+                ]
+            },
+            informatique: {
+                title: '💻 Informatique & Technologies',
+                description: 'Laboratoires informatiques avec ordinateurs récents, double écran, logiciels professionnels (Adobe Suite, Office 365) et environnements de développement complets.',
+                items: [
+                    { icon: '⌨️', text: 'PC Haute Performance' },
+                    { icon: '🎨', text: 'Suite Adobe Creative' },
+                    { icon: '💼', text: 'Microsoft Office 365' },
+                    { icon: '🌐', text: 'Outils Web Dev' },
+                    { icon: '📱', text: 'Dev Mobile' },
+                    { icon: '🔧', text: 'Outils Maintenance' }
+                ]
+            },
+            sante: {
+                title: '🏥 Santé & Paramédical',
+                description: 'Espaces de formation dédiés aux métiers de la santé avec équipements médicaux, mannequins de pratique et documentation professionnelle complète.',
+                items: [
+                    { icon: '💊', text: 'Matériel Médical' },
+                    { icon: '🩺', text: 'Équipements Pratiques' },
+                    { icon: '📋', text: 'Dossiers Patients' },
+                    { icon: '💉', text: 'Kits de Formation' },
+                    { icon: '📚', text: 'Documentation Médicale' },
+                    { icon: '🔬', text: 'Laboratoire Pédagogique' }
+                ]
+            },
+            logistique: {
+                title: '📦 Transit & Logistique',
+                description: 'Salles équipées pour simuler les opérations logistiques avec logiciels de gestion des stocks, transit douanier et commerce international.',
+                items: [
+                    { icon: '🚢', text: 'Import-Export' },
+                    { icon: '📊', text: 'Gestion des Stocks' },
+                    { icon: '🛃', text: 'Procédures Douanières' },
+                    { icon: '🚚', text: 'Transport & Distribution' },
+                    { icon: '📦', text: 'Supply Chain' },
+                    { icon: '🌍', text: 'Commerce International' }
+                ]
+            },
+            secretariat: {
+                title: '📝 Secrétariat & Langues',
+                description: 'Espaces d\'apprentissage avec postes de secrétariat complets, laboratoires de langues et outils de communication professionnelle modernes.',
+                items: [
+                    { icon: '💻', text: 'Bureautique Avancée' },
+                    { icon: '📞', text: 'Standard Téléphonique' },
+                    { icon: '🌐', text: 'Laboratoire de Langues' },
+                    { icon: '✉️', text: 'Correspondance Pro' },
+                    { icon: '📅', text: 'Gestion d\'Agenda' },
+                    { icon: '🗣️', text: 'Communication Orale' }
+                ]
+            },
+            hotellerie: {
+                title: '👨‍🍳 Hôtellerie & Restauration',
+                description: 'Cuisines professionnelles entièrement équipées avec matériel haut de gamme, fours professionnels, chambres froides et espaces de service.',
+                items: [
+                    { icon: '🔥', text: 'Pianos de Cuisson' },
+                    { icon: '🍰', text: 'Atelier Pâtisserie' },
+                    { icon: '❄️', text: 'Chambres Froides' },
+                    { icon: '🍽️', text: 'Salle de Restaurant' },
+                    { icon: '🍷', text: 'Bar Formation' },
+                    { icon: '📸', text: 'Studio Photo Culinaire' }
+                ]
+            }
+        };
+
+        function openModal(spaceId) {
+            const space = spaces[spaceId];
+            const modal = document.getElementById('modal');
+            
+            document.getElementById('modal-title').textContent = space.title;
+            document.getElementById('modal-description').textContent = space.description;
+            
+            const gallery = document.getElementById('modal-gallery');
+            gallery.innerHTML = '';
+            
+            space.items.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'modal-item';
+                div.innerHTML = `
+                    <div class="modal-item-icon">${item.icon}</div>
+                    <div class="modal-item-text">${item.text}</div>
+                `;
+                gallery.appendChild(div);
+            });
+            
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        document.getElementById('modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        document.querySelector('.scroll-indicator').addEventListener('click', function() {
+            window.scrollTo({
+                top: window.innerHeight,
+                behavior: 'smooth'
+            });
+        });
+    </script>
+</body>
+</html>

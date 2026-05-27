@@ -1,0 +1,25 @@
+#!/bin/bash
+# Script de démarrage - TCHEP College Django Backend
+echo "======================================"
+echo "  TCHEP College - Backend Django"
+echo "======================================"
+echo ""
+echo "Démarrage du serveur..."
+echo "Accès : http://localhost:8000"
+echo ""
+echo "Pages disponibles :"
+echo "  http://localhost:8000/              → Accueil"
+echo "  http://localhost:8000/contact.html  → Contact"
+echo "  http://localhost:8000/Registre.html → Inscription"
+echo ""
+echo "Administration :"
+echo "  http://localhost:8000/forms/admin-login/   → Calendrier (admin/admin123)"
+echo "  http://localhost:8000/forms/admins-login/  → Galerie (admin/admin123)"
+echo "  http://localhost:8000/django-admin/        → Interface Django Admin"
+echo ""
+echo "Arrêt : Ctrl+C"
+echo "======================================"
+echo ""
+
+cd "$(dirname "$0")"
+python manage.py runserver 0.0.0.0:8000

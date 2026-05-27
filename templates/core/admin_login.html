@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Connexion Admin</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+body { display:flex; justify-content:center; align-items:center; height:100vh; background:#667eea; }
+.login-card { background:white; padding:40px; border-radius:15px; width:350px; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,0.3);}
+.btn-login { background:#764ba2; color:white; width:100%; margin-top:10px; }
+</style>
+</head>
+<body>
+<div class="login-card">
+  <h3>Connexion Admin</h3>
+  {% if error %}<p style="color:red">{{ error }}</p>{% endif %}
+  <form method="POST">
+    {% csrf_token %}
+    <input type="text" name="username" class="form-control mb-3" placeholder="Nom d'utilisateur" required>
+    <input type="password" name="password" class="form-control mb-3" placeholder="Mot de passe" required>
+    <button type="submit" class="btn btn-login">Se connecter</button>
+  </form>
+</div>
+</body>
+</html>

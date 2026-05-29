@@ -27,9 +27,6 @@ db.sqlite3-journal
 staticfiles/
 media/
 
-# Uploads (photos galerie - trop lourdes pour git)
-uploads/
-
 # Environment variables
 .env
 .env.local

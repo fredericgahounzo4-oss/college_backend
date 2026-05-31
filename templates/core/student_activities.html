@@ -2,15 +2,33 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Galerie TCHEP Consulting</title>
 <style>
 body{margin:0;font-family:Segoe UI,Arial;background:#f4f7f6}
 header{background:#0056b3;color:#fff;padding:30px;text-align:center}
 .container{max-width:1100px;margin:auto;padding:20px}
 .gallery-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:25px}
-.gallery-item{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 5px 15px rgba(0,0,0,.1)}
-.gallery-item img{width:100%;height:230px;object-fit:cover}
+.gallery-item{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 5px 15px rgba(0,0,0,.1);cursor:pointer}
+.gallery-item img{width:100%;height:230px;object-fit:cover;transition:transform 0.2s}
+.gallery-item:hover img{transform:scale(1.03)}
 .caption{text-align:center;padding:15px;font-weight:bold}
+
+/* Mobile : 1 colonne, images plus grandes */
+@media(max-width:600px){
+  .gallery-grid{grid-template-columns:1fr;gap:16px}
+  .gallery-item img{height:260px}
+}
+
+/* Lightbox */
+.lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:9999;align-items:center;justify-content:center;flex-direction:column;padding:20px}
+.lightbox.active{display:flex}
+.lightbox img{max-width:95vw;max-height:80vh;border-radius:8px;object-fit:contain}
+.lightbox .lb-caption{color:#fff;margin-top:12px;font-size:16px;text-align:center}
+.lightbox .lb-close{position:absolute;top:16px;right:20px;color:#fff;font-size:36px;cursor:pointer;line-height:1}
+.lightbox .lb-nav{position:absolute;top:50%;transform:translateY(-50%);color:#fff;font-size:48px;cursor:pointer;padding:10px;user-select:none}
+.lightbox .lb-prev{left:10px}
+.lightbox .lb-next{right:10px}
 </style>
 </head>
 <body>
@@ -21,7 +39,7 @@ header{background:#0056b3;color:#fff;padding:30px;text-align:center}
 <div class="container">
   <div class="gallery-grid">
     {% for img in images %}
-    <div class="gallery-item">
+    <div class="gallery-item" onclick="openLightbox({{ forloop.counter0 }})">
       <img src="{{ img.image }}" alt="{{ img.title }}">
       <div class="caption">{{ img.title }}</div>
     </div>
@@ -30,5 +48,61 @@ header{background:#0056b3;color:#fff;padding:30px;text-align:center}
     {% endfor %}
   </div>
 </div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+  <span class="lb-close" onclick="closeLightbox()">&times;</span>
+  <span class="lb-nav lb-prev" onclick="changeImage(-1, event)">&#8249;</span>
+  <img id="lb-img" src="" alt="">
+  <div class="lb-caption" id="lb-caption"></div>
+  <span class="lb-nav lb-next" onclick="changeImage(1, event)">&#8250;</span>
+</div>
+
+<script>
+const images = [
+  {% for img in images %}
+  { src: "{{ img.image }}", caption: "{{ img.title }}" }{% if not forloop.last %},{% endif %}
+  {% endfor %}
+];
+let current = 0;
+
+function openLightbox(index) {
+  current = index;
+  document.getElementById('lb-img').src = images[index].src;
+  document.getElementById('lb-caption').textContent = images[index].caption;
+  document.getElementById('lightbox').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox(event) {
+  if (!event || event.target === document.getElementById('lightbox') || event.target.classList.contains('lb-close')) {
+    document.getElementById('lightbox').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+}
+
+function changeImage(dir, event) {
+  if (event) event.stopPropagation();
+  current = (current + dir + images.length) % images.length;
+  document.getElementById('lb-img').src = images[current].src;
+  document.getElementById('lb-caption').textContent = images[current].caption;
+}
+
+// Swipe sur mobile
+let startX = 0;
+document.getElementById('lightbox').addEventListener('touchstart', e => startX = e.touches[0].clientX);
+document.getElementById('lightbox').addEventListener('touchend', e => {
+  const diff = startX - e.changedTouches[0].clientX;
+  if (Math.abs(diff) > 50) changeImage(diff > 0 ? 1 : -1, null);
+});
+
+document.addEventListener('keydown', e => {
+  if (document.getElementById('lightbox').classList.contains('active')) {
+    if (e.key === 'ArrowRight') changeImage(1, null);
+    if (e.key === 'ArrowLeft') changeImage(-1, null);
+    if (e.key === 'Escape') closeLightbox();
+  }
+});
+</script>
 </body>
 </html>

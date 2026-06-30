@@ -10,12 +10,14 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*').split(',')
 
 INSTALLED_APPS = [
+    'cloudinary_storage',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'cloudinary',
     'core',
 ]
 
@@ -54,7 +56,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'college_backend.wsgi.application'
 
-# PostgreSQL en production, SQLite en local
 DATABASES = {
     'default': dj_database_url.config(
         default=config('DATABASE_URL', default=f'sqlite:///{BASE_DIR / "db.sqlite3"}')
@@ -78,8 +79,15 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+# Cloudinary pour le stockage des médias (images uploadées via l'admin)
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME', default='dwpmqngue'),
+    'API_KEY': config('CLOUDINARY_API_KEY', default='265435997616125'),
+    'API_SECRET': config('CLOUDINARY_API_SECRET', default='bGol_JagmpIvXOqbt2elFQBpgMs'),
+}
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
 MEDIA_URL = '/uploads/'
-MEDIA_ROOT = BASE_DIR / 'uploads'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = '/admin-login/'

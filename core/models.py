@@ -65,9 +65,9 @@ class Inscription(models.Model):
         return f"{self.prenom} {self.nom}"
 
 class Gallery(models.Model):
-    """Galerie photos"""
+    """Galerie photos - stockage via Cloudinary"""
     title = models.CharField(max_length=200)
-    image = models.URLField(max_length=500)  # URL ImgBB
+    image = models.ImageField(upload_to='gallery/')  # stocké sur Cloudinary
     created_at = models.DateTimeField(auto_now_add=True)
     class Meta:
         db_table = 'gallery'

@@ -77,6 +77,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+WHITENOISE_SKIP_COMPRESS_EXTENSIONS = ['map', 'svg', 'ico', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'woff', 'woff2']
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME', default='dwpmqngue'),
